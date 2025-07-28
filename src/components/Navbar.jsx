@@ -8,7 +8,7 @@ const Navbar = () => {
         PassPanda
       </h1>
       <div>
-        <button className='flex items-center gap-2 rounded-3xl bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded transition duration-300'>
+        <button className='flex items-center gap-2 rounded-3xl bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4  transition duration-300'>
             <img width={20} src="icons/github.svg" alt="github" />
             <span className='text-white'>GitHub</span>
         </button>
