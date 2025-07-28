@@ -7,19 +7,21 @@ const Manager = () => {
     const [form, setForm] = useState({ site: '', username: '', password: '' });
     const [passwords, setPasswords] = useState([]);
     const eyecrossRef = useRef();
+    const [showPass, setShowPass] = useState(false);
 
     useEffect(() => {
         const storedPasswords = JSON.parse(localStorage.getItem('passwords')) || [];
         setPasswords(storedPasswords);
     }, []);
 
+    const togglePassword = () => {
+        setShowPass(prev => !prev);
+    };
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setForm((prevForm) => ({
-            ...prevForm,
-            [name]: value
-        }));
+        setForm((prevForm) => ({ ...prevForm, [name]: value }));
     };
 
     const savePassword = () => {
@@ -59,24 +61,27 @@ const Manager = () => {
         });
     };
     const editPassword = (id) => {
-        confirm('Are you sure you want to edit this password?') || toast.error('Edit cancelled');
-        if (!confirm) return;
-        const passwordToEdit = passwords.find((e) => e.id === id);
-        if (passwordToEdit) {
-            setForm({ site: passwordToEdit.site, username: passwordToEdit.username, password: passwordToEdit.password });
-            const updatedPasswords = passwords.filter((e) => e.id !== id);
-            setPasswords(updatedPasswords);
-            localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
+        const confirm = window.confirm('Are you sure you want to edit this password?');
+        if (confirm) {
+            const passwordToEdit = passwords.find((e) => e.id === id);
+            if (passwordToEdit) {
+                setForm({ site: passwordToEdit.site, username: passwordToEdit.username, password: passwordToEdit.password });
+                const updatedPasswords = passwords.filter((e) => e.id !== id);
+                setPasswords(updatedPasswords);
+                localStorage.setItem('passwords', JSON.stringify(updatedPasswords));
+            }
         }
-    };
-    const showPassword = (e) => {
-        if (eyecrossRef.current.src.includes('eyecross.png')) {
-            eyecrossRef.current.src = 'icons/eye.png';
-            document.getElementById('password').type = 'text';
-        } else {
-            eyecrossRef.current.src = 'icons/eyecross.png';
-            document.getElementById('password').type = 'password';
-
+        else {
+            toast.error('Edit cancelled!', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
         }
     };
     const copyText = (text) => {
@@ -93,9 +98,6 @@ const Manager = () => {
         });
 
     }
-
-
-
     return (
         <div>
             <ToastContainer
@@ -109,7 +111,7 @@ const Manager = () => {
                 draggable
                 pauseOnHover
                 theme="light"
-                // transition="Bounce"
+            // transition="Bounce"
             />
             <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"><div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-fuchsia-400 opacity-20 blur-[100px]"></div></div>
             <div className='w-full lg:w-3/4 h-[61.2vh] mx-auto bg-white p-6 rounded-lg shadow-md overflow-y-auto scrollbar-hide overflow-x-visible scrollbar-thin'>
@@ -119,9 +121,9 @@ const Manager = () => {
                 <div className='flex flex-col md:flex-row justify-between items-center mb-4 w-full gap-2'>
                     <input onChange={handleChange} placeholder='Enter your Username' value={form.username} className='border border-purple-400 p-2 rounded-3xl md:w-3/4 w-full' type="text" name="username" id="username" />
                     <div className='relative md:w-1/4 w-full'>
-                        <input onChange={handleChange} placeholder='Enter your Password' value={form.password} className='border border-purple-400 p-2 rounded-3xl w-full relative' type="password" name="password" id="password" />
-                        <span onClick={showPassword} className='absolute right-2 top-3 cursor-pointer'>
-                            <img ref={eyecrossRef} width={15} src="icons/eyecross.png" alt="eyecross" /></span>
+                        <input onChange={handleChange} placeholder='Enter your Password' value={form.password} className='border border-purple-400 p-2 rounded-3xl w-full relative' type={showPass ? 'text' : 'password'} name="password" id="password" />
+                        <span onClick={togglePassword} className='absolute right-2 top-3 cursor-pointer'>
+                            <img ref={eyecrossRef} width={15} src={showPass ? "icons/eye.png" : "icons/eyecross.png"} alt="eyecross" /></span>
                     </div>
                 </div>
                 <div className='flex justify-center items-center mb-4 w-full gap-2'>
@@ -155,7 +157,7 @@ const Manager = () => {
                                     <tr className='text-left min-h-2 overflow-x-auto text-wrap' key={index}>
                                         <td className="break-words px-2 py-4 whitespace-normal overflow-hidden text-wrap w-1/4 lg:max-w-[250px]">
                                             <div className='flex justify-start items-center relative'>
-                                                <span className='overflow-x-auto'> {e.site}</span>
+                                                <span className='overflow-x-auto'> <a href={e.site} target='_blank'>{e.site}</a></span>
                                                 <div className='lordiconcopy opacity-50 size-7 cursor-pointer absolute right-[-6px]' onClick={() => { copyText(e.site) }}>
                                                     <lord-icon
                                                         style={{ "width": "25px", "height": "25px", "paddingTop": "3px", "paddingLeft": "3px" }}
