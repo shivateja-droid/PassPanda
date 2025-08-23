@@ -26,8 +26,6 @@
 
 ## 📸 Screenshots
 
-
-```markdown
-![Homepage](./screenshots/homepage.png)
+![Homepage](screenshots/homepage.png)
 
 
